@@ -1,0 +1,1 @@
+# commit-msg git hook, written in Golang!
