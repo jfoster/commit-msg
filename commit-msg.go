@@ -14,6 +14,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	defer file.Close()
 
 	cmd := exec.Command("hunspell")
 	cmd.Stdin = file
@@ -24,11 +25,12 @@ func main() {
 	}
 	outs := string(out)
 
+	regex := *regexp.MustCompile(`^&\s([^\s]+)\s\d+\s\d+:\s(.+)$`)
+
 	if !valid(outs) {
 		for _, v := range strings.Split(outs, "\n") {
 			b, _ := regexp.MatchString(`^&`, v)
 			if b {
-				regex := *regexp.MustCompile(`^&\s([^\s]+)\s\d+\s\d+:\s(.+)$`)
 				res := regex.FindAllStringSubmatch(v, -1)
 				for i := range res {
 					fmt.Printf("Misspelling: '%s'. Suggestions: '%s'\n", res[i][1], res[i][2])
